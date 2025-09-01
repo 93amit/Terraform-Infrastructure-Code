@@ -1,8 +1,5 @@
-# AWS provider configuration
-# provider "aws" {                                       # aws provider block
-#   region = "ap-south-1"                                # Mumbai region
-# }
 
+# Configuration code for creating AWS infrastructure using Terraform
 
 # key_pair
 
@@ -83,6 +80,7 @@ resource "aws_security_group" "my_sg" {
 
 # ec2 instance
 resource "aws_instance" "my_inastance" {
+  depends_on             = [aws_security_group.my_sg, aws_key_pair.my-ec2-key] # to ensure sg and key pair created before instance
   count                  = 2   # (meta argument)to create multiple instances
   ami                    = "ami-02d26659fd82cf299" # Amazon ubuntu  AMI for ap-south-1
   instance_type          = "t2.micro"
@@ -103,10 +101,10 @@ resource "aws_instance" "my_inastance" {
 
 # output public ip
 output "instance_public_ip" {
-  value = aws_instance.my_inastance.public_ip
+  value = aws_instance.my_inastance[*].public_ip
 }     
 
 # output public dns
 output "instance_public_dns" {
-  value = aws_instance.my_inastance.public_dns
+  value = aws_instance.my_inastance[*].public_dns
 } 
